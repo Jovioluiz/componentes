@@ -10,10 +10,10 @@ uses
 
 type
   TForm1 = class(TForm)
-    edit: TEditValidator;
     RadioGroup1: TRadioGroup;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    edt: TEditValidator;
     procedure CheckBox1Click(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
     procedure RadioGroup1Click(Sender: TObject);
@@ -32,17 +32,17 @@ implementation
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
-  edit.Validate := CheckBox1.Checked;
+  edt.Validate := CheckBox1.Checked;
 end;
 
 procedure TForm1.CheckBox2Click(Sender: TObject);
 begin
-  edit.InputMask := CheckBox2.Checked;
+  edt.InputMask := CheckBox2.Checked;
 end;
 
 procedure TForm1.RadioGroup1Click(Sender: TObject);
 begin
-  edit.EditType := TEditType(RadioGroup1.ItemIndex);
+  edt.EditType := TEditType(RadioGroup1.ItemIndex);
 end;
 
 end.

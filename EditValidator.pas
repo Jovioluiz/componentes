@@ -16,6 +16,10 @@ type
     constructor Create;
   end;
 
+  EInvalidCEP = class(Exception)
+    constructor Create;
+  end;
+
   TEditValidator = class(TNumberEdit)
   private
     FEditType: TEditType;
@@ -30,6 +34,7 @@ type
     function DoValidate: Boolean; virtual;
     function ValidateCNPJ: Boolean; virtual;
     function ValidateCPF: Boolean; virtual;
+    function ValidateCEP: Boolean; virtual;
     procedure Mascarar; virtual;
     procedure DoExit; override;
   public
@@ -74,19 +79,19 @@ begin
   begin
     {deleta os pontos e traço, senão a mascara fica com pontos e traços a mais
     toda vez que altera algum digito}
-    Delete(str, ansipos('.', str), 1);
-    Delete(str, ansipos('.', str), 1);
-    Delete(str, ansipos('/', str), 1);
-    Delete(str, ansipos('-', str), 1);
+    Delete(str, AnsiPos('.', str), 1);
+    Delete(str, AnsiPos('.', str), 1);
+    Delete(str, AnsiPos('/', str), 1);
+    Delete(str, AnsiPos('-', str), 1);
   end;
 
   if FEditType = etCPF then
   begin
     {deleta os pontos, traço e barra, senão a mascara fica com pontos e traços a mais
     toda vez que altera algum digito}
-    Delete(str, ansipos('.', str), 1);
-    Delete(str, ansipos('.', str), 1);
-    Delete(str, ansipos('-', str), 1);
+    Delete(str, AnsiPos('.', str), 1);
+    Delete(str, AnsiPos('.', str), 1);
+    Delete(str, AnsiPos('-', str), 1);
   end;
 
   case FEditType of
@@ -121,6 +126,7 @@ begin
       case EditType of
         etCNPJ: raise EInvalidCNPJ.Create;
         etCPF: raise EInvalidCPF.Create;
+        etCEP: raise EInvalidCEP.Create;
       end;
     end;
   if InputMask then
@@ -130,10 +136,27 @@ end;
 
 function TEditValidator.DoValidate: Boolean;
 begin
+  Result := False;
+
   case FEditType of
     etCNPJ: Result := ValidateCNPJ;
     etCPF: Result := ValidateCPF;
+    etCEP: Result := ValidateCEP;
   end;
+end;
+
+function TEditValidator.ValidateCEP: Boolean;
+var
+  str: string;
+begin
+  Result := True;
+
+  str := Text;
+
+  Delete(str, AnsiPos('-', str), 1);
+
+  if Length(str) <> 8 then
+    Result := False;
 end;
 
 function TEditValidator.ValidateCNPJ: Boolean;
@@ -220,7 +243,6 @@ begin
                              '99999999999999']) of
 
           0..9: ret := False;
-
     end;
   end;
 
@@ -239,7 +261,7 @@ begin
   ret := True;
 
   for x := 1 to Length(Text) do
-    if not (Text[x] in ['0'..'9', '-', '.', ' ']) then
+    if not (CharInSet(Text[x], ['0'..'9', '-', '.', ' '])) then
       ret := False;
 
   if ret then
@@ -247,7 +269,8 @@ begin
     ret := True;
     cpf := '';
     for x := 1 to Length(Text) do
-      if Text[x] in ['0'..'9'] then cpf := cpf + Text[x];
+      if CharInSet(Text[x], ['0'..'9']) then
+        cpf := cpf + Text[x];
 
     if Length(cpf) <> 11 then
       ret := False;
@@ -255,13 +278,18 @@ begin
     if ret then
     begin
       total := 0;
+
       for x := 1 to 9 do
         total := total + (StrToInt(cpf[x]) * x);
 
       dg1 := total mod 11;
-      if dg1 = 10 then dg1:=0;
-      total:=0;
-      for x:=1 to 8 do
+
+      if dg1 = 10 then
+        dg1 := 0;
+
+      total := 0;
+
+      for x := 1 to 8 do
         total := total + (StrToInt(cpf[x + 1]) * (x));
 
       total := total + (dg1 * 9);
@@ -284,15 +312,16 @@ begin
                              '77777777777',
                              '88888888888',
                              '99999999999']) of
-        0..9:   ret:=False;
+        0..9: ret := False;
       end;
     end
     else
     begin
-      if cpf = '' then ret:=True;
+      if cpf = '' then
+        ret := True;
     end;
   end;
-  Result:=ret;
+  Result := ret;
 end;
 
 { TInvalidCPF }
@@ -307,6 +336,13 @@ end;
 constructor EInvalidCNPJ.Create;
 begin
   Self.Message := 'Número de CNPJ inválido!';
+end;
+
+{ EInvalidCEP }
+
+constructor EInvalidCEP.Create;
+begin
+  Self.Message := 'CEP inválido!';
 end;
 
 end.

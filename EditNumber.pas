@@ -31,7 +31,8 @@ end;
 
 procedure TNumberEdit.KeyPress(var Key: Char);
 begin
-  if not (Key in [#48..#57, #13, #27, #9, #8]) then  //aula22
+
+  if not CharInSet(Key, [#48..#57, #13, #27, #9, #8]) then
     raise Exception.Create('Caractere Inválido');
   inherited;
 end;

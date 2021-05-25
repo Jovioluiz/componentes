@@ -13,15 +13,6 @@ object Form1: TForm1
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object edit: TEditValidator
-    Left = 24
-    Top = 136
-    Width = 121
-    Height = 21
-    TabOrder = 0
-    InputMask = False
-    Validate = False
-  end
   object RadioGroup1: TRadioGroup
     Left = 24
     Top = 8
@@ -30,8 +21,9 @@ object Form1: TForm1
     Caption = 'RadioGroup1'
     Items.Strings = (
       'CNPJ'
-      'CPF')
-    TabOrder = 1
+      'CPF'
+      'CEP')
+    TabOrder = 0
     OnClick = RadioGroup1Click
   end
   object CheckBox1: TCheckBox
@@ -49,7 +41,16 @@ object Form1: TForm1
     Width = 97
     Height = 17
     Caption = 'Mascara'
-    TabOrder = 3
+    TabOrder = 1
     OnClick = CheckBox2Click
+  end
+  object edt: TEditValidator
+    Left = 24
+    Top = 112
+    Width = 121
+    Height = 21
+    TabOrder = 3
+    InputMask = False
+    Validate = False
   end
 end
